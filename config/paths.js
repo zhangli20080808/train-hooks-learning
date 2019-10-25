@@ -1,4 +1,4 @@
-'use strict';
+
 
 const path = require('path');
 const fs = require('fs');
@@ -72,11 +72,16 @@ module.exports = {
   appBuild: resolveApp('build'),
   appPublic: resolveApp('public'),
   appHtml: resolveApp('public/index.html'),
-  appIndexJs: resolveModule(resolveApp, 'src/index'),
+  appQueryHtml: resolveApp('public/query.html'),
+  appTicketHtml: resolveApp('public/ticket.html'),
+  appOrderHtml: resolveApp('public/order.html'),
+  appIndexJs: resolveModule(resolveApp, 'src/index/index'),
+  appQueryJs: resolveModule(resolveApp, 'src/query/index'),
+  appTicketJs: resolveModule(resolveApp, 'src/ticket/index'),
+  appOrderJs: resolveModule(resolveApp, 'src/order/index'),
   appPackageJson: resolveApp('package.json'),
   appSrc: resolveApp('src'),
   appTsConfig: resolveApp('tsconfig.json'),
-  appJsConfig: resolveApp('jsconfig.json'),
   yarnLockFile: resolveApp('yarn.lock'),
   testsSetup: resolveModule(resolveApp, 'src/setupTests'),
   proxySetup: resolveApp('src/setupProxy.js'),
