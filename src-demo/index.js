@@ -11,7 +11,7 @@ serviceWorker.unregister();
 实践 https://juejin.im/post/5d9c5f935188251e3a06bbbb
 
 新特性 -- 1.Context 2.ContextType 3.lazy  允许我们懒加载组件  4.Suspense  因为lazy有loading状态 这个就是用来补齐你的视觉的
-5.memo 优化渲染性能
+5.memo 优化渲染性能 是否一个组件重复执行 useMemo是看一段函数逻辑是否重读执行 一样的算法 看以来是否改变
 
 策略和useEffect是一样的 调用时机有差异  useEffect渲染之后执行 而useMemo的返回值是参与渲染的
 
@@ -23,25 +23,26 @@ const onClick = useMemo(()=>{return ()=>{ console.log('11'}},[]) 只运行一次
 const onClick = useCallback(()=>console.log('11),[]) 可以理解为 useCallback 是useMemo的变体
 
 Context 定义：提供了一种方式，能够让数据在组件树中传递而不是一级一级手动传递 但也有缺陷 就是使用全局变量的形式 会让组件失去独立性 但又使用场景
-API -- createContext(defaultValue?)
+API -- createContext(defaultValue?) 
 静态属性ContextType访问跨层级组件的数据  
 static contentType = createContext()  render->获取 this.context
 
 hooks
 类组件不足  状态逻辑难以复用 缺少复用机制 渲染属性和高阶组件导致层级冗余  复杂难以维护 生命周期函数混杂不想干逻辑 想干逻辑分散在不同的生命周期
- this指向  内联函数过度创建新句柄 类函数成员不能保证this
+ this指向  内联函数过度创建新句柄， 导致子组件重新渲染 类函数成员不能保证this
 
  优势
  1. 函数组件无this指向问题 2. 自定义hooks方便复用状态逻辑 3. 副作用的关注点分离
     useState ->返回一个变量就行了  叫啥我不管 如何知道返回的是当前组件的count呢  因为js是单线程的 当useState被调用的时候 只会在一个上下文中 很多利用了全部唯一性
-    动态增加useState的动作  会发生什么呢？
+    动态增加useState的动作次数  会发生什么呢？  -> 会报错 不能多也不能少 必须在组件顶层调用 也不能在循环块中 按照第一次运行的顺序返回 如果有多个state的时候
+    
 
     useEffect render之后调用 可以根据自定义状态 调用与否 第一次渲染后的调用就相当于 componentDidMount 后面的调用都相当于componentDidUpdate
     回调函数  清除上一次动作的副作用遗留下来的状态  componentWillUnmount
 
- useRef 1.需要访问子组件中的一些方法获取dom元素  2.渲染不同生命周期需要共享的数据 需要访问上一次渲染时的数据甚至是state，就把他们同步到ref中，下一次渲染就能获取到了
+    useRef 1.需要访问子组件中的一些方法获取dom元素  2.渲染不同生命周期需要共享的数据 需要访问上一次渲染时的数据甚至是state，就把他们同步到ref中，下一次渲染就能获取到了 state会重新渲染 而 ref不会
 
- 自定义hooks  使用法则 1.顶层组件调用hooks 2.在函数组件和自定义hooks函数中调用hooks函数 不能在其他函数中调用
+    自定义hooks  使用法则 1.顶层组件调用hooks 2.在函数组件和自定义hooks函数中调用hooks函数 不能在其他函数中调用
 
  不在循环语句 条件语句 嵌套函数中调用 如果不在顶层调用 在不同的生周期调用 顺序可能发生了变化 进而导致变量混乱
 
