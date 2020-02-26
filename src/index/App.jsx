@@ -11,6 +11,9 @@ import DepartDate from "./DepartDate";
 import HighSpeed from "./HighSpeed";
 import Submit from "./Submit";
 import CitySelector from "../common/CitySelector";
+import DateSelector from "../common/DateSelector";
+
+import {h0} from '../common/until'
 
 import {
   exchangeFromTo,
@@ -18,6 +21,9 @@ import {
   hideCitySelector,
   fetchCityData,
   setSelectedCity,
+  showDateSelector,
+  hideDateSelector,
+  setDepartDate
 } from "./actions";
 
 function App(props) {
@@ -26,11 +32,11 @@ function App(props) {
     to,
     dispatch,
     isCitySelectorVisible,
+    isDateSelectorVisible,
     isLoadingCityData,
-    cityData
+    cityData,
+    departDate
   } = props;
-  console.log(cityData, 1);
-
   const onBack = useCallback(() => {
     window.history.back();
   }, []);
@@ -55,23 +61,55 @@ function App(props) {
       dispatch
     );
   }, []);
+
+  const departDateCbs = useMemo(() => {
+    return bindActionCreators(
+      {
+        onClick: showDateSelector
+        // onSelect: setSelectedDate
+      },
+      dispatch
+    );
+  }, []);
+
+  const dateSelectorCbs = useMemo(() => {
+    return bindActionCreators(
+      {
+        onBack: hideDateSelector
+      },
+      dispatch
+    );
+  }, []);
+
+  const onSelectDate = useCallback((day)=>{
+    if(!day) return
+    if(day<h0()) return
+    dispatch(setDepartDate(day))
+    dispatch(hideDateSelector())
+  },[])
   return (
     <div>
-      <div className={cls("header-wrapper", { hidden: isCitySelectorVisible })}>
+      <div
+        className={cls("header-wrapper", {
+          hidden: isCitySelectorVisible || isDateSelectorVisible
+        })}
+      >
         <Header title="火车票" onBack={onBack} />
+        <form action="./query.html" className="form">
+          <Journey from={from} to={to} {...cbs} />
+          <DepartDate time={departDate} {...departDateCbs} />
+          <HighSpeed />
+          <Submit />
+        </form>
       </div>
-      <form action="./query.html" className="form">
-        <Journey from={from} to={to} {...cbs} />
-        <DepartDate />
-        <HighSpeed />
-        <Submit />
-      </form>
+
       <CitySelector
         cityData={cityData}
         isLoading={isLoadingCityData}
         show={isCitySelectorVisible}
         {...citySelectorCbs}
       />
+      <DateSelector time={departDate} onSelect={onSelectDate} show={isDateSelectorVisible} {...dateSelectorCbs} />
     </div>
   );
 }

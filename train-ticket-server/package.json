@@ -4,7 +4,7 @@
   "description": "",
   "private": true,
   "dependencies": {
-    "dayjs": "^1.8.13",
+    "dayjs": "^1.8.20",
     "express": "^4.16.4",
     "mocker-api": "^1.7.4"
   },

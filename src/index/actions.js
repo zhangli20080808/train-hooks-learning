@@ -39,6 +39,7 @@ export function setCityData(cityDate) {
   };
 }
 
+
 export function toggleHighSpeed() {
   return (dispatch, getState) => {
     const { highSpeed } = getState();
