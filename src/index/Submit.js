@@ -1,7 +1,11 @@
-import React from 'react'
-import './Submit.css'
-export default function Submit(props) {
-  return(
-      <div>Submit</div>
-  )
-}
+import React, { memo } from "react";
+import "./Submit.css";
+export default memo(function Submit(props) {
+  return (
+    <div className="submit">
+      <button type="submit" className="submit-button">
+        提交
+      </button>
+    </div>
+  );
+});
