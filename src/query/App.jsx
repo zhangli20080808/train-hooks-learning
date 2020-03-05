@@ -9,6 +9,7 @@ import URI from "urijs";
 import dayjs from "dayjs";
 
 import { h0 } from "../common/until";
+import useNav from "../common/useNav";
 // 获取参数 相当于操作了组件之外的东西 是个副作用
 
 import {
@@ -21,7 +22,9 @@ import {
   setTicketTypes,
   setTrainTypes,
   setArriveStation,
-  setDepartStations
+  setDepartStations,
+  preDay,
+  nextDay
 } from "./action";
 const propTypes = {};
 
@@ -63,6 +66,7 @@ function App(props) {
     if (!searchParsed) {
       return;
     }
+
     //请求的参数作为我们副作用的依赖
     const url = new URI("/rest/query")
       .setSearch("from", from)
@@ -94,53 +98,59 @@ function App(props) {
 
     fetch(url)
       .then(response => response.json())
-      .then(
-        result => {
-          const {
-            dataMap: {
-              directTrainInfo: {
-                trains = [],
-                filter: { ticketType, trainType, depStation, arrStation }
-              }
+      .then(result => {
+        const {
+          dataMap: {
+            directTrainInfo: {
+              trains = [],
+              filter: { ticketType, trainType, depStation, arrStation }
             }
-          } = result;
-          dispatch(setTrainList(trains));
-          dispatch(setTicketTypes(ticketType));
-          dispatch(setTrainTypes(trainType));
-          dispatch(setArriveStation(arrStation));
-          dispatch(setDepartStations(depStation));
-        },
-        [
-          from,
-          to,
-          departDate,
-          highSpeed,
-          orderType,
-          onlyTickets,
-          checkedTicketTypes,
-          checkedTrainTypes,
-          checkedDepartStations,
-          checkedArriveStation,
-          departTimeStart,
-          departTimeEnd,
-          arriveTimeStart,
-          arriveTimeEnd,
-          searchParsed
-        ]
-      );
-  });
+          }
+        } = result;
+        dispatch(setTrainList(trains));
+        dispatch(setTicketTypes(ticketType));
+        dispatch(setTrainTypes(trainType));
+        dispatch(setArriveStation(arrStation));
+        dispatch(setDepartStations(depStation));
+      });
+  }, [
+    arriveTimeEnd,
+    arriveTimeStart,
+    checkedArriveStation,
+    checkedDepartStations,
+    checkedTicketTypes,
+    checkedTrainTypes,
+    departDate,
+    departTimeEnd,
+    departTimeStart,
+    dispatch,
+    from,
+    highSpeed,
+    onlyTickets,
+    orderType,
+    searchParsed,
+    to
+  ]);
 
-  if (!searchParsed) {
-    return null;
-  }
+  const { prev, next, isNextDisabled, isPrevDisabled } = useNav(
+    departDate,
+    dispatch,
+    preDay,
+    nextDay
+  );
+
   return (
     <div>
-      <div className="header-wraper">
+      <div className="header-wrapper">
         <Header title={`${from} ⇀ ${to}`} onBack={onBack} />
       </div>
-      <Nav />
-      <List />
-      <Bottom />
+      <Nav
+        date={departDate}
+        isPrevDisabled={isPrevDisabled}
+        isNextDisabled={isNextDisabled}
+        prev={prev}
+        next={next}
+      />
     </div>
   );
 }
@@ -153,6 +163,8 @@ export default connect(
     return state;
   },
   function mapDispatchToProps(dispatch) {
-    return { dispatch };
+    return {
+      dispatch
+    };
   }
 )(App);
