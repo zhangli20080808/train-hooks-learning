@@ -27,6 +27,8 @@ import { ORDER_DEPART } from "./constants";
 export default {
   from(state = null, action) {
     const { type, payload } = action;
+    console.log(payload,12);
+    
     switch (type) {
       case ACTION_SET_FROM:
         return payload;
@@ -215,3 +217,4 @@ export default {
     return (state = false);
   }
 };
+
