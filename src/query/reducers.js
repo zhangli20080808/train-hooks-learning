@@ -27,8 +27,6 @@ import { ORDER_DEPART } from "./constants";
 export default {
   from(state = null, action) {
     const { type, payload } = action;
-    console.log(payload,12);
-    
     switch (type) {
       case ACTION_SET_FROM:
         return payload;
@@ -101,6 +99,7 @@ export default {
   },
   checkedTicketTypes(state = {}, action) {
     const { type, payload } = action;
+    console.log('123');
     switch (type) {
       case ACTION_SET_CHECKEDTICKET_TYPES:
         return payload;
@@ -214,7 +213,7 @@ export default {
         return payload;
       default:
     }
-    return (state = false);
+    return state;
   }
 };
 

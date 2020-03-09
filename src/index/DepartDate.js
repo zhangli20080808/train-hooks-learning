@@ -27,7 +27,7 @@ export default function DepartDate(props) {
 
   return (
     <div className="depart-date" onClick={onClick}>
-      <input type="hidden" value={h0OfDepart} name="date" />{departDateString}
+      <input type="hidden" value={departDateString} name="date" />{departDateString}
       <span className='date-week'>{weekString} {isToday && '(今天)'}</span>
     </div>
   );

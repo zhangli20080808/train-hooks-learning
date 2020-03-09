@@ -24,7 +24,7 @@ import {
   showDateSelector,
   hideDateSelector,
   setDepartDate,
-  toggleHighSpeed
+  toggleHighSpeed,
 } from "./actions";
 
 function App(props) {
@@ -67,8 +67,7 @@ function App(props) {
   const departDateCbs = useMemo(() => {
     return bindActionCreators(
       {
-        onClick: showDateSelector
-        // onSelect: setSelectedDate
+        onClick: showDateSelector,
       },
       dispatch
     );
@@ -86,6 +85,7 @@ function App(props) {
   const onSelectDate = useCallback(day => {
     if (!day) return;
     if (day < h0()) return;
+    console.log(day,'day');
     dispatch(setDepartDate(day));
     dispatch(hideDateSelector());
   }, []);

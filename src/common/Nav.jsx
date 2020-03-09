@@ -10,8 +10,8 @@ const Nav = memo(function Nav(props) {
 
   const currentString = useMemo(() => {
     const d = dayjs(date);
-    return d.format("M月D日 ") + d.locale("zh-cn").format("ddd");
-  }, [date]);
+    return d.format('M月D日 ') + d.locale('zh-cn').format('ddd');
+}, [date]);
 
   return (
     <div className="nav">

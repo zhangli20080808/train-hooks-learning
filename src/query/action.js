@@ -96,6 +96,8 @@ export function setTicketTypes(ticketTypes) {
   };
 }
 export function setCheckedTicketTypes(checkedTicketTypes) {
+  console.log(checkedTicketTypes);
+  
   return {
     type: ACTION_SET_CHECKEDTICKET_TYPES,
     payload: checkedTicketTypes
@@ -108,8 +110,9 @@ export function setTrainTypes(trainTypes) {
   };
 }
 export function setCheckedTrainTypes(checkedTrainTypes) {
+  console.log(checkedTrainTypes,123);
   return {
-    type: ACTION_SET_CHECKEDTICKET_TYPES,
+    type: ACTION_SET_CHECKEDTRAIN_TYPES,
     payload: checkedTrainTypes
   };
 }
@@ -161,7 +164,7 @@ export function setArriveTimeEnd(arriveTimeEnd) {
     payload: arriveTimeEnd
   };
 }
-export function setIsFilterVisible() {
+export function toggleIsFilterVisible() {
   return (dispatch, getState) => {
     const { isFilterVisible } = getState();
     dispatch({
