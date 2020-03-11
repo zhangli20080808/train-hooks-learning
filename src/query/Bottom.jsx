@@ -1,4 +1,4 @@
-import React, { memo, useState, useCallback } from "react";
+import React, { memo, useState, useCallback, useMemo } from "react";
 import PropTypes from "prop-types";
 import { ORDER_DEPART } from "./constants";
 import ctx from "classnames";
@@ -129,6 +129,21 @@ const BottomModal = memo(function BottomModal(props) {
     }
   ];
 
+  // 是否可以重置
+  const isResetDisabled = useMemo(() => {
+    return (
+      Object.keys(localCheckedTicketTypes).length === 0 &&
+      Object.keys(localCheckedTrainTypes).length === 0 &&
+      Object.keys(localCheckedDepartStations).length === 0 &&
+      Object.keys(localCheckedArriveStation).length === 0
+    );
+  }, [
+    localCheckedArriveStation,
+    localCheckedDepartStations,
+    localCheckedTicketTypes,
+    localCheckedTrainTypes
+  ]);
+
   const sure = () => {
     setCheckedTicketTypes(localCheckedTicketTypes);
     setCheckedTrainTypes(localCheckedTrainTypes);
@@ -137,13 +152,30 @@ const BottomModal = memo(function BottomModal(props) {
     toggleIsFilterVisible();
   };
 
+  const reset = () => {
+    if (isResetDisabled) {
+      return;
+    }
+    setLocalCheckedTicketTypes({});
+    setLocalCheckedTrainTypes({});
+    setLocalCheckedDepartStations({});
+    setLocalCheckedArriveStation({});
+  };
+
   return (
     <div className="bottom-modal">
       <div className="bottom-dialog">
         <div className="bottom-dialog-content">
           <div className="title">
-            <span className="reset">重置</span>
-            <span className="ok" onClick={() => sure()}>
+            <span
+              className={ctx("reset", {
+                disabled: isResetDisabled
+              })}
+              onClick={reset}
+            >
+              重置
+            </span>
+            <span className="ok" onClick={sure}>
               确定
             </span>
           </div>
@@ -179,8 +211,24 @@ export default function Bottom(props) {
     setCheckedTicketTypes,
     setCheckedTrainTypes,
     setCheckedDepartStations,
-    setCheckedArriveStation,
+    setCheckedArriveStation
   } = props;
+
+  // 是否可以重置
+  const noChecked = useMemo(() => {
+    return (
+      Object.keys(checkedTicketTypes).length === 0 &&
+      Object.keys(checkedTrainTypes).length === 0 &&
+      Object.keys(checkedDepartStations).length === 0 &&
+      Object.keys(checkedArriveStation).length === 0
+    );
+  }, [
+    checkedArriveStation,
+    checkedDepartStations,
+    checkedTicketTypes,
+    checkedTrainTypes
+  ]);
+
   return (
     <div className="bottom">
       <div className="bottom-filters">
@@ -208,11 +256,11 @@ export default function Bottom(props) {
         </span>
         <span
           className={ctx("item", {
-            "item-on": isFilterVisible
+            "item-on": isFilterVisible || !noChecked
           })}
           onClick={toggleIsFilterVisible}
         >
-          <i className="icon">{"\uf0f7"}</i>
+          <i className="icon">{noChecked ? "\uf0f7" : "\uf446"}</i>
           只看高铁动车
         </span>
       </div>
