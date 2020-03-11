@@ -57,6 +57,10 @@ export default {
     switch (type) {
       case ACTION_SET_HIGHSPEED:
         return payload;
+
+      case ACTION_SET_CHECKEDTRAIN_TYPES:
+        const checkedTypes = payload;
+        return Boolean(checkedTypes[1] && checkedTypes[5]);
       default:
     }
     return state;
@@ -99,7 +103,6 @@ export default {
   },
   checkedTicketTypes(state = {}, action) {
     const { type, payload } = action;
-    console.log('123');
     switch (type) {
       case ACTION_SET_CHECKEDTICKET_TYPES:
         return payload;
@@ -109,6 +112,7 @@ export default {
   },
   trainTypes(state = [], action) {
     const { type, payload } = action;
+
     switch (type) {
       case ACTION_SET_TRAIN_TYPES:
         return payload;
@@ -121,6 +125,17 @@ export default {
     switch (type) {
       case ACTION_SET_CHECKEDTRAIN_TYPES:
         return payload;
+      case ACTION_SET_HIGHSPEED:
+        const highSpeed = payload;
+        const newCheckedTrainTypes = { ...state };
+        if (highSpeed) {
+          newCheckedTrainTypes[1] = true;
+          newCheckedTrainTypes[5] = true;
+        } else {
+          delete newCheckedTrainTypes[1];
+          delete newCheckedTrainTypes[5];
+        }
+        return newCheckedTrainTypes;
       default:
     }
     return state;
@@ -216,4 +231,3 @@ export default {
     return state;
   }
 };
-

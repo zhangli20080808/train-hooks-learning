@@ -1,36 +1,62 @@
-import React, { memo, useState, useCallback, useMemo } from "react";
+import React, { memo, useState, useCallback, useMemo, useReducer } from "react";
 import PropTypes from "prop-types";
 import { ORDER_DEPART } from "./constants";
 import ctx from "classnames";
 import "./Bottom.css";
+
+// react中 reducer中的store 是清新的  但是对我们组件中的 state是无能为力的 怎么办呢  useReducer  只不过这个是操作的组件的state
+// 使用 useReducer 将toggle从 reducer中抹掉 useReducer 也是用来声明state和修改state方法的 方式不同而已
+// 三个参数  纯函数 state初始值 (同步初始化) 第三个参数传入  异步初始化 函数的参数是 useReducer的第二个参数
+
+//这个 纯函数 reducer 和 redux 的 store一样 接受两个参数  state action useReducer就是对 usestate的封装
+function checkReducer(state, action) {
+  const { type, payload } = action;
+  switch (type) {
+    case "toggle":
+      const newState = { ...state };
+      if (payload in newState) {
+        delete newState[payload];
+      } else {
+        newState[payload] = true;
+      }
+      return newState;
+    case "reset":
+      return {};
+    default:
+  }
+  return state;
+}
 
 const propTypes = {};
 
 const defaultProps = {};
 
 const Filter = memo(function Filter(props) {
-  const { name, checked, toggle, value } = props;
+  const { name, checked, dispatch, value } = props;
   return (
-    <li onClick={() => toggle(value)} className={ctx({ checked })}>
+    <li
+      onClick={() => dispatch({ payload: value, type: "toggle" })}
+      className={ctx({ checked })}
+    >
       {name}
     </li>
   );
 });
 
 const Option = memo(function Option(props) {
-  const { title, options, checkedMap = {}, update } = props;
-  const toggle = useCallback(
-    value => {
-      const newCheckMap = { ...checkedMap };
-      if (value in checkedMap) {
-        delete newCheckMap[value];
-      } else {
-        newCheckMap[value] = true;
-      }
-      update(newCheckMap);
-    },
-    [checkedMap, update]
-  );
+  const { title, options, checkedMap = {}, dispatch } = props;
+  // const toggle = useCallback(
+  //   value => {
+  //     const newCheckMap = { ...checkedMap };
+  //     if (value in checkedMap) {
+  //       delete newCheckMap[value];
+  //     } else {
+  //       newCheckMap[value] = true;
+  //     }
+  //     update(newCheckMap);
+  //   },
+  //   [checkedMap, update]
+  // );
   return (
     <div className="option">
       <h3>{title}</h3>
@@ -40,7 +66,7 @@ const Option = memo(function Option(props) {
             <Filter
               key={option.value}
               {...option}
-              toggle={toggle}
+              dispatch={dispatch}
               checked={option.value in checkedMap}
             />
           );
@@ -76,30 +102,41 @@ const BottomModal = memo(function BottomModal(props) {
   } = props;
 
   //创建四个类型的值  延迟初始化state 函数 第一次初始化的时候执行
-  const [localCheckedTicketTypes, setLocalCheckedTicketTypes] = useState(() => {
-    return {
-      ...checkedTicketTypes
-    };
-  });
-  const [localCheckedTrainTypes, setLocalCheckedTrainTypes] = useState(() => {
-    return {
-      ...checkedTrainTypes
-    };
-  });
-  const [localCheckedDepartStations, setLocalCheckedDepartStations] = useState(
-    () => {
+  // 三个参数
+  const [localCheckedTicketTypes, localCheckedTicketTypesDispatch] = useReducer(
+    checkReducer,
+    checkedTicketTypes,
+    checkedTicketTypes => {
       return {
-        ...checkedDepartStations
+        ...checkedTicketTypes
       };
     }
   );
-  const [localCheckedArriveStation, setLocalCheckedArriveStation] = useState(
-    () => {
+  const [localCheckedTrainTypes, localCheckedTrainTypesDispatch] = useReducer(
+    checkReducer,
+    checkedTrainTypes,
+    checkedTrainTypes => {
       return {
-        ...checkedArriveStation
+        ...checkedTrainTypes
       };
     }
   );
+  const [
+    localCheckedDepartStations,
+    localCheckedDepartStationsDispatch
+  ] = useReducer(checkReducer, checkedDepartStations, checkedDepartStations => {
+    return {
+      ...checkedDepartStations
+    };
+  });
+  const [
+    localCheckedArriveStation,
+    localCheckedArriveStationDispatch
+  ] = useReducer(checkReducer, checkedArriveStation, checkedArriveStation => {
+    return {
+      ...checkedArriveStation
+    };
+  });
 
   //数据结构  设置缓存区  利用 state
   const optionGroup = [
@@ -107,25 +144,25 @@ const BottomModal = memo(function BottomModal(props) {
       title: "坐席类型",
       options: ticketTypes,
       checkedMap: localCheckedTicketTypes,
-      update: setLocalCheckedTicketTypes
+      dispatch: localCheckedTicketTypesDispatch
     },
     {
       title: "车次类型",
       options: trainTypes,
       checkedMap: localCheckedTrainTypes,
-      update: setLocalCheckedTrainTypes
+      dispatch: localCheckedTrainTypesDispatch
     },
     {
       title: "出发车站",
       options: departStations,
       checkedMap: localCheckedDepartStations,
-      update: setLocalCheckedDepartStations
+      dispatch: localCheckedDepartStationsDispatch
     },
     {
       title: "到达车站",
       options: arriveStation,
       checkedMap: localCheckedArriveStation,
-      update: setLocalCheckedArriveStation
+      dispatch: localCheckedArriveStationDispatch
     }
   ];
 
@@ -156,10 +193,10 @@ const BottomModal = memo(function BottomModal(props) {
     if (isResetDisabled) {
       return;
     }
-    setLocalCheckedTicketTypes({});
-    setLocalCheckedTrainTypes({});
-    setLocalCheckedDepartStations({});
-    setLocalCheckedArriveStation({});
+    localCheckedTicketTypesDispatch({ payload: {}, type: "reset" });
+    localCheckedTrainTypesDispatch({ payload: {}, type: "reset" });
+    localCheckedDepartStationsDispatch({ payload: {}, type: "reset" });
+    localCheckedArriveStationDispatch({ payload: {}, type: "reset" });
   };
 
   return (

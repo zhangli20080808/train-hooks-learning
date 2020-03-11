@@ -110,7 +110,6 @@ export function setTrainTypes(trainTypes) {
   };
 }
 export function setCheckedTrainTypes(checkedTrainTypes) {
-  console.log(checkedTrainTypes,123);
   return {
     type: ACTION_SET_CHECKEDTRAIN_TYPES,
     payload: checkedTrainTypes
