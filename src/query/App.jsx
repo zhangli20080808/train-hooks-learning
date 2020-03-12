@@ -123,6 +123,9 @@ function App(props) {
             }
           }
         } = result;
+       trains.forEach(item=>{
+         item.date = dayjs(departDate).format('YYYY-MM-DD')
+       })
         dispatch(setTrainList(trains));
         dispatch(setTicketTypes(ticketType));
         dispatch(setTrainTypes(trainType));
